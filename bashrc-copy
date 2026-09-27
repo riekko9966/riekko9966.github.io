@@ -1,0 +1,71 @@
+# System Shortcuts
+alias editbash='subl ~/.bashrc'
+alias c='clear'
+alias x='exit'
+alias uibug='plasmashell --replace &'
+
+# Directory Shortcuts
+alias doc='cd ~/Documents'
+alias vid='cd ~/Videos'
+alias dow='cd ~/Downloads'
+alias mus='cd ~/Music'
+alias des='cd ~/Desktop'
+
+# ---- Mullvad VPN quick commands ----
+v() {
+    case "$1" in
+        on)
+            mullvad connect
+            ;;
+        off)
+            mullvad disconnect
+            ;;
+        re)
+            mullvad reconnect
+            ;;
+        s|status)
+            mullvad status
+            ;;
+        help|"")
+            cat <<EOF
+Mullvad quick commands:
+  v <country_code>   Set location to country and reconnect (e.g. v de, v us, v se)
+  v on                Connect to the VPN
+  v off                Disconnect from the VPN
+  v re                 Reconnect to the VPN
+  v s                  Show VPN status
+  v help               Show this help message
+EOF
+            ;;
+        *)
+            # Treat anything else as a country code
+            echo "Setting location to: $1"
+            mullvad relay set location "$1"
+            mullvad connect
+            ;;
+    esac
+}
+# ---- End Mullvad quick commands ---- 
+
+# Download Video via yt-dlp using clipboard URL
+# Usage: dv     (standard)
+#        dv c   (with Firefox cookies)
+dv() {
+    local extra_flags=()
+    [[ "$1" == "c" ]] && extra_flags+=(--cookies-from-browser firefox)
+    yt-dlp "${extra_flags[@]}" "$(wl-paste)"
+}
+
+# Download Audio only via yt-dlp using clipboard URL
+# Usage: da     (standard)
+#        da c   (with Firefox cookies)
+da() {
+    local extra_flags=(-f ba)
+    [[ "$1" == "c" ]] && extra_flags+=(--cookies-from-browser firefox)
+    yt-dlp "${extra_flags[@]}" "$(wl-paste)"
+}
+
+
+restart_plasma() {
+    kquitapp5 plasmashell && kstart5 plasmashell
+}
